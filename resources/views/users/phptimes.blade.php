@@ -14,19 +14,9 @@
             <li><a href="#">2</a></li>
             <li><a href="#">3</a></li>
         </ul>
-        
-        <div>
-            @if(count($phptimes) == 0)
-            @if (\Auth::id() === $user->id)
-                {!! Form::open(['route' => 'times.phpstore', $user->id]) !!}
-                <div class="form-group">
-                {!! Form::submit('作成', ['class' => "btn btn-default form-control"]) !!}
-                </div>
-                {!! Form::close() !!}
-            @endif
-            @endif
-
-        </div>
+        @if(count($phptimes) > 0)
+        @include('times.phptimes')
+        @endif
         </div>
         </div>
 @endsection

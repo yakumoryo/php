@@ -7,52 +7,32 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Time;
 
-class UsersController extends Controller
+class TimesController extends Controller
 {
-    public function index()
+     public function index()
     {
-        $users = User::paginate(10);
+        $phptimes=Time::orderBy('totaltime','desc')->get();
 
-        return view('users.index', [
-            'users' => $users,
+        return view('times.index', [
+            'phptimes' => $phptimes,
         ]);
     }
     
-    public function show($id)
+    public function show()
     {
-        $user = User::find($id);
-        $phptimes = $user->times()->find($id);
+        $phptimes=Time::orderBy('totaltime','desc')->get();
 
-        $data = [
-            'user' => $user,
+        return view('times.index', [
             'phptimes' => $phptimes,
-        ];
-
-        return view('users.show', $data);
+        ]);
     }
     
-    public function followings($id)
+    public function phpcreate($id)
     {
-        $user = User::find($id);
-        $followings = $user->times();
-
-        $data = [
-            'user' => $user,
-            'users' => $followings,
-        ];
-
-        return view('users.followings', $data);
-    }
-    
-    public function phptimes($id)
-    {
-        $user = User::find($id);
-        $phptimes = $user->times()->find($id);
-        //$phpstatus1=$phptimes->where('phpstatuslesson1','1')->count();
-        //$phpstatus0=$phptimes->where('phpstatuslesson1','0')->count();
-        //$phpstatus=$phpstatus1/$phpstatus1;
+       $user = User::find($id);
+    //$phptimes = Time::find($id);
         
-        //レッスン別全ユーザー達成率
+         //レッスン別達成率
         $avgphpstatuslesson0=Time::avg('phpstatuslesson0')*100;
         $avgphpstatuslesson1=Time::avg('phpstatuslesson1')*100;
         $avgphpstatuslesson2=Time::avg('phpstatuslesson2')*100;
@@ -69,7 +49,7 @@ class UsersController extends Controller
         $avgphpstatuslesson13=Time::avg('phpstatuslesson13')*100;
         $avgphpstatuslesson14=Time::avg('phpstatuslesson14')*100;
         
-        //レッスン別全ユーザー平均時間
+        //レッスン別平均時間
         $avgtimephplesson0=Time::avg('phptimelesson0');
         $avgtimephplesson1=Time::avg('phptimelesson1');
         $avgtimephplesson2=Time::avg('phptimelesson2');
@@ -87,45 +67,7 @@ class UsersController extends Controller
         $avgtimephplesson14=Time::avg('phptimelesson14');
         
         
-        //コース合計時間userid->sum(lessontime1,2...)
-        //コース平均時間sum(lessontime1,2...)/$times->user->count
-        //コース平均達成率sum(lessonstatus1,2...)/where(phpstatus,like)sum
-        
-        //コース登録者数$times->user->count　テーブルを分けないとレッスンごとに集計はできないか(カラムはひとまとめな為)
-        
-        
-        //合計時間
-        
-        
-        $phptimes->totaltime=$phptimes->phptimelesson0+$phptimes->phptimelesson1
-                     +$phptimes->phptimelesson2+$phptimes->phptimelesson3
-                     +$phptimes->phptimelesson4+$phptimes->phptimelesson5
-                     +$phptimes->phptimelesson6+$phptimes->phptimelesson7
-                     +$phptimes->phptimelesson8+$phptimes->phptimelesson9
-                     +$phptimes->phptimelesson10+$phptimes->phptimelesson11
-                     +$phptimes->phptimelesson12+$phptimes->phptimelesson13
-                     +$phptimes->phptimelesson14;
                      
-                     $phptimes->save();
-                     $phptotaltime=$phptimes->totaltime;
-        
-        
-        //関数使えない？
-        //function lessontotal($a, $b) {
-        //$user = User::find($b);
-        //$phptimes = $user->times()->find($b);
-        //$result = 0;
-        //for ($i = 0; $i <= $a; $i++) {
-        //    $result = $result + $phptimes->phptimelesson.$i;
-        //}
-        //return $result;
-        //}
-        //$phptotaltime=lessontotal(14,$id);
-        //$allphplesson0=Time::sum('phptimelesson0');
-        //$allphplesson1=Time::sum('phptimelesson1');
-        //alltotaltime=$allphplesson0+$allphplesson1;
-        
-        
         //コース全ユーザー平均時間
         $avgphptimelesson0=Time::avg('phptimelesson0');
         $avgphptimelesson1=Time::avg('phptimelesson1');
@@ -151,12 +93,133 @@ class UsersController extends Controller
         +$avgphptimelesson10+$avgphptimelesson11
         +$avgphptimelesson12+$avgphptimelesson13
         +$avgphptimelesson14)/Time::count();
+
+        $data = [
+            'user' => $user,
+            
+            'avgphpstatuslesson0' => $avgphpstatuslesson0,
+            'avgphpstatuslesson1' => $avgphpstatuslesson1,
+            'avgphpstatuslesson2' => $avgphpstatuslesson2,
+            'avgphpstatuslesson3' => $avgphpstatuslesson3,
+            'avgphpstatuslesson4' => $avgphpstatuslesson4,
+            'avgphpstatuslesson5' => $avgphpstatuslesson5,
+            'avgphpstatuslesson6' => $avgphpstatuslesson6,
+            'avgphpstatuslesson7' => $avgphpstatuslesson7,
+            'avgphpstatuslesson8' => $avgphpstatuslesson8,
+            'avgphpstatuslesson9' => $avgphpstatuslesson9,
+            'avgphpstatuslesson10' => $avgphpstatuslesson10,
+            'avgphpstatuslesson11' => $avgphpstatuslesson11,
+            'avgphpstatuslesson12' => $avgphpstatuslesson12,
+            'avgphpstatuslesson13' => $avgphpstatuslesson13,
+            'avgphpstatuslesson14' => $avgphpstatuslesson14,
+            
+            'avgtimephplesson0' => $avgtimephplesson0,
+            'avgtimephplesson1' => $avgtimephplesson1,
+            'avgtimephplesson2' => $avgtimephplesson2,
+            'avgtimephplesson3' => $avgtimephplesson3,
+            'avgtimephplesson4' => $avgtimephplesson4,
+            'avgtimephplesson5' => $avgtimephplesson5,
+            'avgtimephplesson6' => $avgtimephplesson6,
+            'avgtimephplesson7' => $avgtimephplesson7,
+            'avgtimephplesson8' => $avgtimephplesson8,
+            'avgtimephplesson9' => $avgtimephplesson9,
+            'avgtimephplesson10' => $avgtimephplesson10,
+            'avgtimephplesson11' => $avgtimephplesson11,
+            'avgtimephplesson12' => $avgtimephplesson12,
+            'avgtimephplesson13' => $avgtimephplesson13,
+            'avgtimephplesson14' => $avgtimephplesson14,
+            
+            'avgphptime'=>$avgphptime,
+        ];
+
+        return view('times.phpcreate', $data);
         
+    }
+    
+    public function phpstore(Request $request)
+    {
+        $request->user()->times()->create();
+
+        return redirect(route('users.phptimes', ['id' => $user->id]));
+    }
+    
+    
+    public function phpedit($id)
+    {
         
-        //計算不能？Time::avg()->groupBy('phptimelesson0','phptimelesson1');
+        $user = User::find($id);
+    //$phptimes = Time::find($id);
+        $phptimes = $user->times()->find($id);
         
-        //計算不能？$phptimes->sum()->groupBy('phpstatuslesson0','phpstatuslesson1');
+         //レッスン別達成率
+        $avgphpstatuslesson0=Time::avg('phpstatuslesson0')*100;
+        $avgphpstatuslesson1=Time::avg('phpstatuslesson1')*100;
+        $avgphpstatuslesson2=Time::avg('phpstatuslesson2')*100;
+        $avgphpstatuslesson3=Time::avg('phpstatuslesson3')*100;
+        $avgphpstatuslesson4=Time::avg('phpstatuslesson4')*100;
+        $avgphpstatuslesson5=Time::avg('phpstatuslesson5')*100;
+        $avgphpstatuslesson6=Time::avg('phpstatuslesson6')*100;
+        $avgphpstatuslesson7=Time::avg('phpstatuslesson7')*100;
+        $avgphpstatuslesson8=Time::avg('phpstatuslesson8')*100;
+        $avgphpstatuslesson9=Time::avg('phpstatuslesson9')*100;
+        $avgphpstatuslesson10=Time::avg('phpstatuslesson10')*100;
+        $avgphpstatuslesson11=Time::avg('phpstatuslesson11')*100;
+        $avgphpstatuslesson12=Time::avg('phpstatuslesson12')*100;
+        $avgphpstatuslesson13=Time::avg('phpstatuslesson13')*100;
+        $avgphpstatuslesson14=Time::avg('phpstatuslesson14')*100;
         
+        //レッスン別平均時間
+        $avgtimephplesson0=Time::avg('phptimelesson0');
+        $avgtimephplesson1=Time::avg('phptimelesson1');
+        $avgtimephplesson2=Time::avg('phptimelesson2');
+        $avgtimephplesson3=Time::avg('phptimelesson3');
+        $avgtimephplesson4=Time::avg('phptimelesson4');
+        $avgtimephplesson5=Time::avg('phptimelesson5');
+        $avgtimephplesson6=Time::avg('phptimelesson6');
+        $avgtimephplesson7=Time::avg('phptimelesson7');
+        $avgtimephplesson8=Time::avg('phptimelesson8');
+        $avgtimephplesson9=Time::avg('phptimelesson9');
+        $avgtimephplesson10=Time::avg('phptimelesson10');
+        $avgtimephplesson11=Time::avg('phptimelesson11');
+        $avgtimephplesson12=Time::avg('phptimelesson12');
+        $avgtimephplesson13=Time::avg('phptimelesson13');
+        $avgtimephplesson14=Time::avg('phptimelesson14');
+        
+        //合計時間
+        $phptotaltime=$phptimes->phptimelesson0+$phptimes->phptimelesson1;
+                     +$phptimes->phptimelesson2+$phptimes->phptimelesson3
+                     +$phptimes->phptimelesson4+$phptimes->phptimelesson5
+                     +$phptimes->phptimelesson6+$phptimes->phptimelesson7
+                     +$phptimes->phptimelesson8+$phptimes->phptimelesson9
+                     +$phptimes->phptimelesson10+$phptimes->phptimelesson11
+                     +$phptimes->phptimelesson12+$phptimes->phptimelesson13
+                     +$phptimes->phptimelesson14;
+                     
+        //コース全ユーザー平均時間
+        $avgphptimelesson0=Time::avg('phptimelesson0');
+        $avgphptimelesson1=Time::avg('phptimelesson1');
+        $avgphptimelesson2=Time::avg('phptimelesson2');
+        $avgphptimelesson3=Time::avg('phptimelesson3');
+        $avgphptimelesson4=Time::avg('phptimelesson4');
+        $avgphptimelesson5=Time::avg('phptimelesson5');
+        $avgphptimelesson6=Time::avg('phptimelesson6');
+        $avgphptimelesson7=Time::avg('phptimelesson7');
+        $avgphptimelesson8=Time::avg('phptimelesson8');
+        $avgphptimelesson9=Time::avg('phptimelesson9');
+        $avgphptimelesson10=Time::avg('phptimelesson10');
+        $avgphptimelesson11=Time::avg('phptimelesson11');
+        $avgphptimelesson12=Time::avg('phptimelesson12');
+        $avgphptimelesson13=Time::avg('phptimelesson13');
+        $avgphptimelesson14=Time::avg('phptimelesson14');
+        
+        $avgphptime=($avgphptimelesson0+$avgphptimelesson1
+        +$avgphptimelesson2+$avgphptimelesson3
+        +$avgphptimelesson4+$avgphptimelesson5
+        +$avgphptimelesson6+$avgphptimelesson7
+        +$avgphptimelesson8+$avgphptimelesson9
+        +$avgphptimelesson10+$avgphptimelesson11
+        +$avgphptimelesson12+$avgphptimelesson13
+        +$avgphptimelesson14)/Time::count();
         
         //コース全ユーザー平均達成率
         $allsumphpstatus=($avgphpstatuslesson0+$avgphpstatuslesson1
@@ -194,19 +257,9 @@ class UsersController extends Controller
         +$phptimes->phpstatuslesson12+$phptimes->phpstatuslesson13
         +$phptimes->phpstatuslesson14)/15*100;
 
-
-//GROUP BYレッスン数　計算不能？
-//$phplessoncount=$phpstatus->groupBy('phpstatuslesson0','phpstatuslesson1',...)->count();;
-//$sumphpstatus=($phpsumstatuslesson0+$phpsumstatuslesson1)/$phplessoncount;
-
-//$Time::groupBy('phpstatuslesson0','phpstatuslesson1',...)->count();;
-
-
         $data = [
             'user' => $user,
             'phptimes' => $phptimes,
-            //'phpstatus1' => $phpstatus1,
-            //'phpstatus0' => $phpstatus0,
             
             'avgphpstatuslesson0' => $avgphpstatuslesson0,
             'avgphpstatuslesson1' => $avgphpstatuslesson1,
@@ -246,6 +299,46 @@ class UsersController extends Controller
             'phpstatus'=>$phpstatus,
         ];
 
-        return view('users.phptimes', $data);
+        return view('times.phpedit', $data);
+        
+    }
+    
+    public function phpupdate(Request $request, $id)
+    {
+        //$this->validate($request, [
+           // 'phptimelesson0' => 'required|max:191',
+            //'' => 'required|max:191',:
+        //]);
+        
+        
+        $user = User::find($id);
+        //$phptimes = Time::find($id);
+        $phptimes = $user->times()->find($id);
+        $phptimes->phptimelesson0 = $request->phptimelesson0;
+        $phptimes->save();
+        
+        return redirect(route('users.phptimes', ['id' => $user->id]));
+    }
+    
+    public function phpstatuslesson1update1(Request $request, $id)
+    {
+ 
+        $user = User::find($id);
+        $phptimes = $user->times()->find($id);
+        $phptimes->phpstatuslesson1 = 0;
+        $phptimes->save();
+        
+        return redirect()->back();
+    }
+    
+    public function phpstatuslesson1update2(Request $request, $id)
+    {
+        
+        $user = User::find($id);
+        $phptimes = $user->times()->find($id);
+        $phptimes->phpstatuslesson1 = 1;
+        $phptimes->save();
+        
+        return redirect()->back();
     }
 }

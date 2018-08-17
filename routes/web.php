@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'TimesController@index'); 
 
 // ユーザ登録
 Route::get('signup', 'Auth\RegisterController@showRegistrationForm')->name('signup.get');
@@ -26,4 +24,19 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+    Route::resource('times', 'TimesController');
+    Route::post('phpstore', 'TimesController@phpstore')->name('times.phpstore');
+    
+    
+    Route::group(['prefix' => 'users/{id}'], function () {
+        Route::get('phptimes', 'UsersController@phptimes')->name('users.phptimes');
+        Route::get('followings', 'UsersController@followings')->name('users.followings');
+        Route::get('phpedit', 'TimesController@phpedit')->name('times.phpedit');
+        Route::put('phpupdate', 'TimesController@phpupdate')->name('times.update');
+        Route::get('phpcreate', 'TimesController@phpcreate')->name('times.phpcreate');
+        
+        
+        Route::put('phpstatuslesson1update1', 'TimesController@phpstatuslesson1update1')->name('times.unfinish');
+        Route::put('phpstatuslesson1update2', 'TimesController@phpstatuslesson1update2')->name('times.finish');
+    });
 });
